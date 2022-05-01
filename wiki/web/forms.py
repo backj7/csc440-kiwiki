@@ -3,16 +3,16 @@
     ~~~~~
 """
 from flask_wtf import Form
-from wtforms import BooleanField
-from wtforms import TextField
-from wtforms import TextAreaField
-from wtforms import PasswordField
-from wtforms.validators import InputRequired
+from wtforms import TextField, BooleanField, PasswordField, TextAreaField
+from wtforms.fields.html5 import DecimalField
+from wtforms.validators import InputRequired, Optional
 from wtforms.validators import ValidationError
 
 from wiki.core import clean_url
 from wiki.web import current_wiki
 from wiki.web import current_users
+
+from urllib.parse import quote
 
 
 class URLForm(Form):
@@ -55,3 +55,41 @@ class LoginForm(Form):
             return
         if not user.check_password(field.data):
             raise ValidationError('Username and password do not match.')
+
+
+class NewRecipeForm(Form):
+    name = TextField(validators=[InputRequired()])
+
+    def validate_name(form, field):
+        if current_wiki.exists('recipes/' + quote(field.data)):
+            raise ValidationError('Recipe %s already exists.' % field.data)
+
+
+class RecipeForm(Form):
+    # Required Fields
+    name = TextField(validators=[InputRequired()])
+    ingredients = TextField(validators=[InputRequired()])
+    instructions = TextAreaField(validators=[InputRequired()])
+    serving_size = DecimalField(validators=[InputRequired()])
+    servings = DecimalField(validators=[InputRequired()])
+
+    # Nutitional Information (Optional, not always known)
+    fat = DecimalField(validators=[Optional()])  # Grams
+    saturated_fat = DecimalField(validators=[Optional()])  # Grams
+    trans_fat = DecimalField(validators=[Optional()])  # Grams
+
+    cholesterol = DecimalField(validators=[Optional()])  # Milligrams
+    sodium = DecimalField(validators=[Optional()])  # Milligrams
+
+    carbohydrates = DecimalField(validators=[Optional()])  # Grams
+    fiber = DecimalField(validators=[Optional()])  # Grams
+    sugar = DecimalField(validators=[Optional()])  # Grams
+    added_sugar = DecimalField(validators=[Optional()])  # Grams
+
+    protein = DecimalField(validators=[Optional()])  # Grams
+
+    vitamin_d = DecimalField(validators=[Optional()])  # Micrograms
+    calcium = DecimalField(validators=[Optional()])  # Milligrams
+    iron = DecimalField(validators=[Optional()])  # Milligrams
+    potassium = DecimalField(validators=[Optional()])  # Milligrams
+

@@ -2,6 +2,8 @@
     Routes
     ~~~~~~
 """
+from urllib.parse import quote, unquote
+
 from flask import Blueprint
 from flask import flash
 from flask import redirect
@@ -14,10 +16,11 @@ from flask_login import login_user
 from flask_login import logout_user
 
 from wiki.core import Processor
-from wiki.web.forms import EditorForm
+from wiki.web.forms import EditorForm, NewRecipeForm
 from wiki.web.forms import LoginForm
 from wiki.web.forms import SearchForm
 from wiki.web.forms import URLForm
+from wiki.web.forms import RecipeForm
 from wiki.web import current_wiki
 from wiki.web import current_users
 from wiki.web.user import protect
@@ -168,6 +171,40 @@ def user_admin(user_id):
 @bp.route('/user/delete/<int:user_id>/')
 def user_delete(user_id):
     pass
+
+
+@bp.route('/recipe/new', methods=['GET', 'POST'])
+@protect
+def recipe_create():
+    form = NewRecipeForm()
+    if form.validate_on_submit():
+        return redirect(url_for(
+            'wiki.recipe_edit', recipe_name=quote(form.name.data)))
+    return render_template('recipe_create.html', form=form)
+
+
+@bp.route('/recipe/edit/<string:recipe_name>/', methods=['GET', 'POST'])
+@protect
+def recipe_edit(recipe_name):
+    page = current_wiki.get('recipes/' + quote(recipe_name))
+    form = RecipeForm(obj=page)
+    if form.validate_on_submit():
+        if not page:
+            page = current_wiki.get_bare('recipes/' + quote(recipe_name))
+        #form.populate_obj(page)
+        #page.save()
+        #flash('"%s" was saved.' % page.title, 'success')
+        return redirect(url_for('wiki.recipe_display', recipe_name=quote(form.name.data)))
+
+    if form.name.data is None:
+        form.name.data = recipe_name
+    return render_template('recipe_editor.html', form=form, page=page)
+
+
+@bp.route('/recipe/<string:recipe_name>/')
+def recipe_display(recipe_name):
+    page = current_wiki.get_or_404(recipe_name)
+    return render_template('page.html', page=page)
 
 
 """

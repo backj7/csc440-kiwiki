@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Create new Recipe{% endblock title %}
+
+{% block content %}
+<form class="form form-inline" method="POST">
+    {{ form.hidden_tag() }}
+	{{ form.name(placeholder='Recipe Name') }}<br>
+    {{ form.ingredients(placeholder='Ingredients (Comma Seperated)') }}<br>
+    {{ form.instructions(placeholder='Instructions') }}<br>
+    <br>
+    <h3>Nutrition Information</h3>
+    {{ form.servings(placeholder='Servings') }}<br>
+    {{ form.serving_size(placeholder='Serving Size') }}<br>
+    <br>
+    <h4>Fat (g)</h4>
+    {{ form.fat(placeholder='Total Fat') }}<br>
+    {{ form.saturated_fat(placeholder='Saturated Fat') }}<br>
+    {{ form.trans_fat(placeholder='Trans Fat') }}<br>
+    <br>
+    <br>
+    {{ form.cholesterol(placeholder='Cholesterol (mg)') }}<br>
+    {{ form.sodium(placeholder='Sodium (mg)') }}<br>
+    <br>
+    <h4>Carbohydrates (g)</h4>
+    {{ form.carbohydrates(placeholder='Total Carbohydrates') }}<br>
+    {{ form.fiber(placeholder='Fiber') }}<br>
+    {{ form.sugar(placeholder='Total Sugar') }}<br>
+    {{ form.added_sugar(placeholder='Added Sugar') }}<br>
+    <br>
+    <br>
+    {{ form.protein(placeholder='Protein (g)') }}<br>
+    <br>
+    <h4>Vitamins and Minerals</h4>
+    {{ form.vitamin_d(placeholder='Vitamin D (mcg)') }}<br>
+    {{ form.calcium(placeholder='Calcium (mg)') }}<br>
+    {{ form.iron(placeholder='Iron (mg)') }}<br>
+    {{ form.potassium(placeholder='Potassium (mg)') }}<br>
+	<input type="submit" class="btn btn-primary" value="Create">
+</form>
+{% endblock content %}
