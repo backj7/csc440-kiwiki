@@ -1,5 +1,6 @@
 import os
 
+import flask
 from flask import current_app
 from flask import Flask
 from flask import g
@@ -8,6 +9,9 @@ from werkzeug.local import LocalProxy
 
 from wiki.core import Wiki
 from wiki.web.user import UserManager
+
+from flask import current_app
+from wiki.data import db
 
 class WikiError(Exception):
     pass
@@ -33,6 +37,7 @@ def create_app(directory):
     app = Flask(__name__)
     app.config['CONTENT_DIR'] = directory
     app.config['TITLE'] = 'wiki'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mariadb+mariadbconnector://localhost:3306'
     try:
         app.config.from_pyfile(
             os.path.join(app.config.get('CONTENT_DIR'), 'config.py')
@@ -45,6 +50,10 @@ def create_app(directory):
 
     from wiki.web.routes import bp
     app.register_blueprint(bp)
+
+    db.init_app(app)
+    with current_app:
+        db.create_all()
 
     return app
 
